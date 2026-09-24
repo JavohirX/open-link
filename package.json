@@ -1,0 +1,19 @@
+{
+  "name": "open-link",
+  "version": "1.2.2",
+  "description": "Chrome MV3 extension that bypasses LinkedIn authwalls, unblurs profiles via Schema.org JSON-LD, and halts redirect loops. Zero telemetry.",
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  },
+  "keywords": [
+    "chrome-extension",
+    "manifest-v3",
+    "linkedin",
+    "authwall",
+    "privacy",
+    "profile-viewer",
+    "redirect-prevention",
+    "schema-unmasking"
+  ],
+  "license": "MIT"
+}

@@ -1,0 +1,56 @@
+/* LinkedIn Authwall Guard - Profile Page Enhancer & Unblurrer */
+
+/* Unlock page scrolling */
+html.li-guard-scroll-unlocked,
+body.li-guard-scroll-unlocked {
+  overflow: auto !important;
+  position: static !important;
+  height: auto !important;
+}
+
+/* 1. Instantly delete / hide the Experience & Education overlay box */
+.container-raised:has(.blurred_overlay__title),
+div[class*="container-raised"]:has(.blurred_overlay__title),
+div:has(> .blurred_overlay__title),
+.blurred_overlay__title,
+.blurred-overlay__sign-in-cta,
+#blurred-overlay-sign-in-modal,
+[data-outlet="blurred-overlay-sign-in-modal"],
+.contextual-sign-in-modal,
+.modal--contextual-sign-in,
+.modal__overlay,
+[data-impression-id*="contextual-sign-in"] {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+/* 2. Unblur the Experience & Education section completely */
+.blur,
+.blurred-content,
+.blurred-overlay,
+.blurred-list,
+[class*="blurred-content"],
+.experience-education__list .blurred-content,
+.experience-education .blur,
+.experience-education [class*="blur"],
+.experience-education [aria-hidden="true"] {
+  filter: none !important;
+  -webkit-filter: none !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  user-select: auto !important;
+  visibility: visible !important;
+}
+
+/* 3. Strip any gradient overlay scrims or pseudo-element blockers */
+.blurred-overlay::before,
+.blurred-overlay::after,
+.experience-education__list::before,
+.experience-education__list::after,
+.experience-education::before,
+.experience-education::after {
+  display: none !important;
+  content: none !important;
+}
