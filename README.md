@@ -1,4 +1,4 @@
-# OpenLink 🔓
+# OpenLink
 
 > **Chrome MV3 extension that bypasses LinkedIn authwalls, unblurs profiles via Schema.org JSON-LD, and halts redirect loops. Zero telemetry.**
 
@@ -9,20 +9,20 @@
 
 ---
 
-## 🌟 Key Features
+## Key Features
 
-* 🚀 **Automatic Authwall Bypass:** Intercepts LinkedIn authwall redirects (`/authwall?sessionRedirect=...`) and restores the target profile seamlessly without forcing user login.
-* 🤖 **DNR Crawler Spoofing:** Uses Chrome `declarativeNetRequest` header rules to simulate search crawler requests on profile routes, unlocking LinkedIn's full Server-Side Rendered (SSR) public HTML.
-* 🔍 **Schema.org JSON-LD Unmasking:** Extracts embedded `@type: "Person"` metadata to automatically reconstruct masked asterisks (`****`) in job titles, institutions, and dates.
-* 👁️ **Experience & Education Unblurring:** Automatically removes blurred overlay cards (*"View full experience"*), dismisses contextual login modals, and unlocks page scrolling.
-* 🛡️ **Intelligent Loop Guard:** Tracks per-tab bounce timestamps in a 30-second sliding window to stop infinite redirect cycles when a profile is restricted by LinkedIn (Case B / HTTP 999).
-* 🌐 **1-Click Public Mirrors:** When a private profile cannot be viewed on LinkedIn, provides instant one-click buttons for **Archive.today**, **Wayback Machine**, **Google Cache snippets**, and **Bing snippets**.
-* 🔙 **Pristine History Stack:** Executes zero-latency `location.replace()` so the browser Back button returns directly to search results (Google, Bing, DuckDuckGo) without authwall traps.
-* 🔒 **Strict Zero-Telemetry Privacy:** Operates 100% locally in your browser. No background analytics, no external servers, and zero telemetry transmissions.
+* **Automatic Authwall Bypass:** Intercepts LinkedIn authwall redirects (`/authwall?sessionRedirect=...`) and restores the target profile seamlessly without forcing user login.
+* **DNR Crawler Spoofing:** Uses Chrome `declarativeNetRequest` header rules to simulate search crawler requests on profile routes, unlocking LinkedIn's full Server-Side Rendered (SSR) public HTML.
+* **Schema.org JSON-LD Unmasking:** Extracts embedded `@type: "Person"` metadata to automatically reconstruct masked asterisks (`****`) in job titles, institutions, and dates.
+* **Experience & Education Unblurring:** Automatically removes blurred overlay cards (*"View full experience"*), dismisses contextual login modals, and unlocks page scrolling.
+* **Intelligent Loop Guard:** Tracks per-tab bounce timestamps in a 30-second sliding window to stop infinite redirect cycles when a profile is restricted by LinkedIn (Case B / HTTP 999).
+* **Public Mirrors:** When a private profile cannot be viewed on LinkedIn, provides instant links for Archive.today, Wayback Machine, Google Cache snippets, and Bing snippets.
+* **Pristine History Stack:** Executes zero-latency `location.replace()` so the browser Back button returns directly to search results (Google, Bing, DuckDuckGo) without authwall traps.
+* **Strict Zero-Telemetry Privacy:** Operates 100% locally in your browser. No background analytics, no external servers, and zero telemetry transmissions.
 
 ---
 
-## 🛠️ How It Works Under the Hood
+## How It Works Under the Hood
 
 ```
 [Profile Link Clicked]
@@ -44,11 +44,11 @@
 
 ---
 
-## 🚀 Installation (Developer Mode)
+## Installation (Developer Mode)
 
 1. Clone or download this repository:
    ```bash
-   git clone https://github.com/your-username/open-link.git
+   git clone https://github.com/JavohirX/open-link.git
    ```
 2. Open Google Chrome (or any Chromium browser like Brave, Edge, Opera).
 3. Navigate to `chrome://extensions/` in the address bar.
@@ -58,9 +58,9 @@
 
 ---
 
-## 🧪 Testing
+## Testing
 
-OpenLink comes with a comprehensive automated test suite powered by Node.js native test runner:
+OpenLink comes with a comprehensive automated test suite powered by the Node.js native test runner:
 
 ```bash
 npm test
@@ -74,7 +74,7 @@ npm test
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 open-link/
@@ -100,7 +100,7 @@ open-link/
 
 ---
 
-## 🔒 Privacy & Security Guarantee
+## Privacy & Security Guarantee
 
 * **No Data Collection:** OpenLink never logs, stores, or transmits your browsing activity.
 * **No External Network Calls:** The extension codebase is strictly audited to contain zero `fetch()`, `XMLHttpRequest`, `WebSocket`, or `sendBeacon()` calls.
@@ -108,6 +108,6 @@ open-link/
 
 ---
 
-## 📄 License
+## License
 
 This project is open-source software licensed under the [MIT License](LICENSE).

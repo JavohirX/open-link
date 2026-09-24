@@ -377,16 +377,16 @@
       </div>
       <div class="li-guard-actions">
         <a class="li-guard-btn li-guard-btn-primary" href="https://archive.today/newest/${encodeURI(target)}" target="_blank" rel="noopener noreferrer" title="View historical public snapshot on Archive.today">
-          🌐 Archive.today
+          Archive.today
         </a>
         <a class="li-guard-btn li-guard-btn-secondary" href="https://web.archive.org/web/*/${encodeURI(target)}" target="_blank" rel="noopener noreferrer" title="View Internet Archive snapshots">
-          🏛️ Wayback Machine
+          Wayback Machine
         </a>
         <a class="li-guard-btn li-guard-btn-secondary" href="https://www.google.com/search?q=${encodeURIComponent(searchKeyword)}" target="_blank" rel="noopener noreferrer" title="Search Google for indexed headline, experience & education text">
-          🔍 Google Snippet
+          Google Snippet
         </a>
         <a class="li-guard-btn li-guard-btn-secondary" href="https://www.bing.com/search?q=${encodeURIComponent(bingKeyword)}" target="_blank" rel="noopener noreferrer" title="Search Bing index for profile summary">
-          🔎 Bing Search
+          Bing Search
         </a>
         ${canonical ? `
         <button class="li-guard-btn li-guard-btn-accent" id="li-guard-canonical-btn" title="Try canonical www.linkedin.com domain">
