@@ -1,10 +1,9 @@
 {
   "manifest_version": 3,
   "name": "OpenLink - LinkedIn Profile & Authwall Guard",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Chrome MV3 extension that bypasses LinkedIn authwalls, unblurs profiles via Schema.org JSON-LD, and halts redirect loops. Zero telemetry.",
   "homepage_url": "https://github.com/JavohirX/open-link",
-  "minimum_chrome_version": "96",
   "icons": {
     "16": "icons/icon-16.png",
     "32": "icons/icon-32.png",

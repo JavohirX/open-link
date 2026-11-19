@@ -56,8 +56,6 @@ OpenLink is distributed through [GitHub Releases](https://github.com/JavohirX/op
 4. Turn on **Developer mode** (top right in Chrome, left sidebar in Edge).
 5. Click **Load unpacked** and select the unzipped folder (the one containing `manifest.json`).
 
-Requires Chrome 96 or newer, or another Chromium browser based on it.
-
 ### Updating
 
 Manually installed extensions do not update themselves. To update, download the new zip, replace the contents of your folder with it, then click the reload icon on the OpenLink card in the extensions page. Your settings and activity log are kept.
