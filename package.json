@@ -1,9 +1,19 @@
 {
   "name": "open-link",
   "version": "1.2.2",
-  "description": "Chrome MV3 extension that bypasses LinkedIn authwalls, unblurs profiles via Schema.org JSON-LD, and halts redirect loops. Zero telemetry.",
+  "private": true,
+  "description": "Opens LinkedIn profiles without the login wall, unblurs experience and education, and stops redirect loops. No tracking.",
+  "homepage": "https://github.com/JavohirX/open-link",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JavohirX/open-link.git"
+  },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
-    "test": "node --test tests/*.test.js"
+    "test": "node --test tests/*.test.js",
+    "build": "node scripts/build.mjs"
   },
   "keywords": [
     "chrome-extension",

@@ -2,6 +2,7 @@
 node_modules/
 
 # Chrome Extension build & metadata artifacts
+dist/
 _metadata/
 *.crx
 *.pem

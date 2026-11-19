@@ -44,17 +44,31 @@
 
 ---
 
-## Installation (Developer Mode)
+## Installation
 
-1. Clone or download this repository:
-   ```bash
-   git clone https://github.com/JavohirX/open-link.git
-   ```
-2. Open Google Chrome (or any Chromium browser like Brave, Edge, Opera).
-3. Navigate to `chrome://extensions/` in the address bar.
-4. Enable **Developer mode** in the top right corner.
-5. Click **Load unpacked** in the top left corner.
-6. Select the project folder.
+OpenLink is distributed through [GitHub Releases](https://github.com/JavohirX/open-link/releases), not the Chrome Web Store or Edge Add-ons. Both stores prohibit extensions that work around login restrictions, so you install it manually.
+
+1. Download `open-link-vX.Y.Z.zip` from the [latest release](https://github.com/JavohirX/open-link/releases/latest).
+2. Unzip it into a folder you will keep, for example `Documents/open-link`. The browser loads the extension from this folder, so deleting it removes the extension.
+3. Open the extensions page:
+   * Chrome, Brave, Opera: `chrome://extensions`
+   * Edge: `edge://extensions`
+4. Turn on **Developer mode** (top right in Chrome, left sidebar in Edge).
+5. Click **Load unpacked** and select the unzipped folder (the one containing `manifest.json`).
+
+Requires Chrome 102 or newer, or another Chromium browser based on it.
+
+### Updating
+
+Manually installed extensions do not update themselves. To update, download the new zip, replace the contents of your folder with it, then click the reload icon on the OpenLink card in the extensions page. Your settings and activity log are kept.
+
+### From source
+
+```bash
+git clone https://github.com/JavohirX/open-link.git
+```
+
+Then follow steps 3–5 above and select the cloned folder.
 
 ---
 
@@ -71,6 +85,28 @@ npm test
 * **Schema Unmasking:** Logo slug matching, multi-job handling, and positional index fallbacks.
 * **Loop Guard Engine:** Sliding window expiry, tab isolation, and state persistence.
 * **Navigation Handling:** Back-button traversal and HTTP 999 stub fast-forwarding.
+
+---
+
+## Releasing
+
+Requires Node.js 22 or newer.
+
+```bash
+npm run build   # writes dist/open-link-v<version>.zip and prints its SHA-256
+```
+
+The zip contains only the runtime files: manifest, scripts, styles, icons and LICENSE. The build fails if `manifest.json` and `package.json` have different versions, or if any file the manifest references is missing.
+
+To publish a release:
+
+1. Bump `version` in both `manifest.json` and `package.json`, then commit.
+2. Tag and push:
+   ```bash
+   git tag v1.2.3
+   git push origin main v1.2.3
+   ```
+3. The [Release workflow](.github/workflows/release.yml) runs the tests, checks that the tag matches the manifest version, builds the zip and creates the GitHub Release with it attached.
 
 ---
 
@@ -95,6 +131,11 @@ open-link/
 │   └── popup.css              # Modern popup styling
 ├── icons/                     # Extension icons (16, 32, 48, 128px)
 ├── tests/                     # Automated test suites
+├── scripts/
+│   └── build.mjs              # Packages the release zip (npm run build)
+├── .github/workflows/
+│   └── release.yml            # Publishes a GitHub Release on version tags
+├── PRIVACY.md                 # Privacy policy
 └── LICENSE                    # MIT License
 ```
 
@@ -102,9 +143,12 @@ open-link/
 
 ## Privacy & Security Guarantee
 
-* **No Data Collection:** OpenLink never logs, stores, or transmits your browsing activity.
+* **No Data Collection:** OpenLink never sends your browsing activity anywhere. The popup's activity log (the last 50 LinkedIn URLs it acted on) stays in your browser, and you can wipe it with **Clear**.
 * **No External Network Calls:** The extension codebase is strictly audited to contain zero `fetch()`, `XMLHttpRequest`, `WebSocket`, or `sendBeacon()` calls.
 * **Open Redirect Defense:** Only validates and restores URLs that strictly match authentic LinkedIn domains (`*.linkedin.com`, `*.linkedin.cn`).
+* **Minimal Permissions:** Access is limited to LinkedIn domains. No `tabs` permission, and no access to any other site.
+
+See [PRIVACY.md](PRIVACY.md) for exactly what is stored, which request headers are changed, and why each permission is needed.
 
 ---
 

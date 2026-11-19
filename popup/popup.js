@@ -66,10 +66,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function inspectCurrentTab() {
     try {
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-      if (!tab || !tab.url) {
+      if (!tab) {
         tabBadge.className = 'badge badge-neutral';
         tabBadge.textContent = 'Idle';
         tabInfo.textContent = 'No active page found.';
+        return;
+      }
+
+      // Without the "tabs" permission, Chrome only exposes tab.url for hosts
+      // listed in host_permissions (LinkedIn). Any other tab arrives with no URL.
+      if (!tab.url) {
+        tabBadge.className = 'badge badge-neutral';
+        tabBadge.textContent = 'External';
+        tabInfo.textContent = 'Not a LinkedIn page.';
         return;
       }
 

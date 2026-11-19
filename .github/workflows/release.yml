@@ -1,0 +1,42 @@
+# Publishes a GitHub Release with the packaged extension zip whenever a version tag is pushed.
+#   git tag v1.2.3 && git push origin v1.2.3
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Run tests
+        run: npm test
+
+      - name: Check tag matches manifest version
+        run: |
+          version="$(node -p "require('./manifest.json').version")"
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match manifest.json version $version"
+            exit 1
+          fi
+
+      - name: Build zip
+        run: npm run build
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/open-link-*.zip \
+            --title "OpenLink $GITHUB_REF_NAME" \
+            --generate-notes
