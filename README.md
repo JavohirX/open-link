@@ -56,7 +56,7 @@ OpenLink is distributed through [GitHub Releases](https://github.com/JavohirX/op
 4. Turn on **Developer mode** (top right in Chrome, left sidebar in Edge).
 5. Click **Load unpacked** and select the unzipped folder (the one containing `manifest.json`).
 
-Requires Chrome 102 or newer, or another Chromium browser based on it.
+Requires Chrome 96 or newer, or another Chromium browser based on it.
 
 ### Updating
 

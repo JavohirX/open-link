@@ -15,11 +15,19 @@ div:has(> .blurred_overlay__title),
 .blurred_overlay__title,
 .blurred-overlay__sign-in-cta,
 #blurred-overlay-sign-in-modal,
-[data-outlet="blurred-overlay-sign-in-modal"],
-.contextual-sign-in-modal,
-.modal--contextual-sign-in,
-.modal__overlay,
-[data-impression-id*="contextual-sign-in"] {
+[data-outlet="blurred-overlay-sign-in-modal"] {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+/* Contextual sign-in popups. profile.js adds .li-guard-keep-modals to <html>
+   when "Auto-dismiss profile sign-in popups" is turned off. */
+html:not(.li-guard-keep-modals) .contextual-sign-in-modal,
+html:not(.li-guard-keep-modals) .modal--contextual-sign-in,
+html:not(.li-guard-keep-modals) .modal__overlay,
+html:not(.li-guard-keep-modals) [data-impression-id*="contextual-sign-in"] {
   display: none !important;
   opacity: 0 !important;
   pointer-events: none !important;

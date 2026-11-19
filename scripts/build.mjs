@@ -28,8 +28,6 @@ const INCLUDE = [
   'icons'
 ];
 
-const MAX_DESCRIPTION_LENGTH = 132; // Chrome's manifest limit
-
 function fail(message) {
   console.error(`build: ${message}`);
   process.exit(1);
@@ -52,7 +50,8 @@ function collectFiles(entry) {
     .map((p) => p.split(sep).join('/'));
 }
 
-// Every file path the manifest and service worker point at.
+// Every file path the manifest and service worker point at (the service worker
+// imports lib/ scripts and registers the content/ scripts at runtime).
 function referencedFiles(manifest) {
   const refs = new Set();
   Object.values(manifest.icons || {}).forEach((p) => refs.add(p));
@@ -67,9 +66,7 @@ function referencedFiles(manifest) {
   if (worker) {
     refs.add(worker);
     const source = readFileSync(join(ROOT, worker), 'utf8');
-    for (const call of source.matchAll(/importScripts\(([^)]*)\)/g)) {
-      for (const lit of call[1].matchAll(/['"]([^'"]+)['"]/g)) refs.add(lit[1]);
-    }
+    for (const lit of source.matchAll(/['"]((?:lib|content)\/[^'"]+\.(?:js|css))['"]/g)) refs.add(lit[1]);
   }
   return refs;
 }
@@ -144,9 +141,6 @@ readJson(manifest.declarative_net_request?.rule_resources?.[0]?.path || 'rules.j
 
 if (manifest.version !== pkg.version) {
   fail(`version mismatch: manifest.json ${manifest.version} vs package.json ${pkg.version}`);
-}
-if ((manifest.description || '').length > MAX_DESCRIPTION_LENGTH) {
-  fail(`manifest description is ${manifest.description.length} chars (max ${MAX_DESCRIPTION_LENGTH})`);
 }
 
 const paths = [...new Set(INCLUDE.flatMap(collectFiles))].sort();

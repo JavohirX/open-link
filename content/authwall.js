@@ -49,20 +49,63 @@
   // -------------------------------------------------------------
   // 3. Tab-Isolated Loop Guard (FR-5) via sessionStorage
   // -------------------------------------------------------------
+  const DEFAULT_LOOP_SETTINGS = { windowMs: 30000, maxAttempts: 1 };
   const normTarget = parser && parser.normalizeProfileUrl ? parser.normalizeProfileUrl(targetUrl) : targetUrl;
   const loopStorageKey = 'li_guard_attempt_' + normTarget;
   const canonicalStorageKey = 'li_guard_canonical_' + normTarget;
-  let lastAttempt = 0;
-  try {
-    lastAttempt = parseInt(sessionStorage.getItem(loopStorageKey) || '0', 10);
-  } catch {
-    // Private mode / storage restricted
+  const attempts = readAttempts(loopStorageKey);
+
+  if (attempts.count === 0) {
+    // First bounce for this profile in this tab: restore immediately, no settings needed.
+    restoreTarget(0);
+  } else {
+    // A previous restore bounced back here. Whether that is a loop depends on the
+    // user's "sliding window" and "max restorations" settings, so read them first.
+    readLoopSettings((loopSettings) => {
+      const now = Date.now();
+      if (now - attempts.last >= loopSettings.windowMs) {
+        restoreTarget(0);
+      } else if (attempts.count < loopSettings.maxAttempts) {
+        restoreTarget(attempts.count);
+      } else {
+        handleLoop(now);
+      }
+    });
   }
 
-  const now = Date.now();
-  const isLoop = lastAttempt > 0 && (now - lastAttempt) < 30000;
+  // -------------------------------------------------------------
+  // Loop Guard Helpers
+  // -------------------------------------------------------------
+  function readAttempts(key) {
+    try {
+      const raw = sessionStorage.getItem(key);
+      if (!raw) return { count: 0, last: 0 };
+      // Older versions stored a bare timestamp of the last attempt
+      if (/^\d+$/.test(raw)) return { count: 1, last: parseInt(raw, 10) };
+      const parsed = JSON.parse(raw);
+      return { count: Number(parsed.count) || 0, last: Number(parsed.last) || 0 };
+    } catch {
+      // Private mode / storage restricted / malformed value
+      return { count: 0, last: 0 };
+    }
+  }
 
-  if (isLoop) {
+  function readLoopSettings(callback) {
+    const finish = (stored) => {
+      const s = { ...DEFAULT_LOOP_SETTINGS, ...(stored || {}) };
+      callback({
+        windowMs: Number(s.windowMs) || DEFAULT_LOOP_SETTINGS.windowMs,
+        maxAttempts: Number(s.maxAttempts) || DEFAULT_LOOP_SETTINGS.maxAttempts
+      });
+    };
+    try {
+      chrome.storage.local.get('settings', (res) => finish(res && res.settings));
+    } catch {
+      finish(null);
+    }
+  }
+
+  function handleLoop(now) {
     // Check if target is a regional LinkedIn subdomain (Case B Workaround)
     const canonicalUrl = parser ? parser.getCanonicalLinkedInUrl(targetUrl) : null;
     const normCanonical = canonicalUrl && parser && parser.normalizeProfileUrl
@@ -120,31 +163,32 @@
         authwallUrl: currentUrl
       });
     } catch {}
-    return;
   }
 
-  // Record this attempt in tab's session storage
-  try {
-    sessionStorage.setItem(loopStorageKey, String(now));
-  } catch {}
+  function restoreTarget(previousCount) {
+    // Record this attempt in tab's session storage
+    try {
+      sessionStorage.setItem(loopStorageKey, JSON.stringify({ count: previousCount + 1, last: Date.now() }));
+    } catch {}
 
-  // -------------------------------------------------------------
-  // 4. Instant In-Place History Replacement
-  // -------------------------------------------------------------
-  // CRITICAL: location.replace() REPLACES the current history entry
-  // instead of pushing a new one. This ensures:
-  // a) The browser Back button returns directly to Google search.
-  // b) The long authwall URL does NOT linger for 1 second.
-  try {
-    chrome.runtime.sendMessage({
-      type: 'RECORD_RESTORED',
-      targetUrl,
-      authwallUrl: currentUrl
-    });
-  } catch {}
+    // -------------------------------------------------------------
+    // 4. Instant In-Place History Replacement
+    // -------------------------------------------------------------
+    // CRITICAL: location.replace() REPLACES the current history entry
+    // instead of pushing a new one. This ensures:
+    // a) The browser Back button returns directly to Google search.
+    // b) The long authwall URL does NOT linger for 1 second.
+    try {
+      chrome.runtime.sendMessage({
+        type: 'RECORD_RESTORED',
+        targetUrl,
+        authwallUrl: currentUrl
+      });
+    } catch {}
 
-  console.log('[AuthwallGuard] Instantly restoring profile in-place:', targetUrl);
-  window.location.replace(targetUrl);
+    console.log('[AuthwallGuard] Instantly restoring profile in-place:', targetUrl);
+    window.location.replace(targetUrl);
+  }
 
   // -------------------------------------------------------------
   // Fallback Helper Functions & Banner Rendering

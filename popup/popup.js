@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const data = await chrome.storage.local.get(['settings', 'stats', 'recentEvents']);
       const settings = data.settings || {
         enabled: true,
-        windowMs: 8000,
+        windowMs: 30000,
         maxAttempts: 1,
         autoDismissModals: true
       };
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Update Controls
       toggleEnabled.checked = settings.enabled !== false;
       settingMaxAttempts.value = String(settings.maxAttempts || 1);
-      settingWindowSec.value = String(Math.round((settings.windowMs || 8000) / 1000));
+      settingWindowSec.value = String(Math.round((settings.windowMs || 30000) / 1000));
       settingDismissModals.checked = settings.autoDismissModals !== false;
 
       updateStatusUI(toggleEnabled.checked);

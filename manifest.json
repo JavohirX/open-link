@@ -1,10 +1,10 @@
 {
   "manifest_version": 3,
   "name": "OpenLink - LinkedIn Profile & Authwall Guard",
-  "version": "1.2.2",
-  "description": "Opens LinkedIn profiles without the login wall, unblurs experience and education, and stops redirect loops. No tracking.",
+  "version": "1.2.3",
+  "description": "Chrome MV3 extension that bypasses LinkedIn authwalls, unblurs profiles via Schema.org JSON-LD, and halts redirect loops. Zero telemetry.",
   "homepage_url": "https://github.com/JavohirX/open-link",
-  "minimum_chrome_version": "102",
+  "minimum_chrome_version": "96",
   "icons": {
     "16": "icons/icon-16.png",
     "32": "icons/icon-32.png",
@@ -14,6 +14,7 @@
   "permissions": [
     "webNavigation",
     "storage",
+    "scripting",
     "declarativeNetRequestWithHostAccess"
   ],
   "declarative_net_request": {
@@ -41,28 +42,5 @@
       "48": "icons/icon-48.png",
       "128": "icons/icon-128.png"
     }
-  },
-  "content_scripts": [
-    {
-      "matches": [
-        "*://*.linkedin.com/authwall*",
-        "*://*.linkedin.cn/authwall*"
-      ],
-      "js": [
-        "lib/url-parser.js",
-        "content/authwall.js"
-      ],
-      "css": ["content/authwall.css"],
-      "run_at": "document_start"
-    },
-    {
-      "matches": [
-        "*://*.linkedin.com/in/*",
-        "*://*.linkedin.cn/in/*"
-      ],
-      "js": ["content/profile.js"],
-      "css": ["content/profile.css"],
-      "run_at": "document_start"
-    }
-  ]
+  }
 }

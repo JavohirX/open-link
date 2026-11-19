@@ -18,11 +18,60 @@ const DEFAULT_SETTINGS = {
   showLoopBanner: true
 };
 
+// Content scripts are registered here instead of in manifest.json so that the
+// popup's on/off switch can stop them from running at all.
+const CONTENT_SCRIPTS = [
+  {
+    id: 'authwall',
+    matches: ['*://*.linkedin.com/authwall*', '*://*.linkedin.cn/authwall*'],
+    js: ['lib/url-parser.js', 'content/authwall.js'],
+    css: ['content/authwall.css'],
+    runAt: 'document_start'
+  },
+  {
+    id: 'profile',
+    matches: ['*://*.linkedin.com/in/*', '*://*.linkedin.cn/in/*'],
+    js: ['content/profile.js'],
+    css: ['content/profile.css'],
+    runAt: 'document_start'
+  }
+];
+const RULESET_IDS = chrome.runtime.getManifest().declarative_net_request.rule_resources.map((r) => r.id);
+
 // Initialize loop guard instance
 const loopGuard = new LoopGuard({
   windowMs: DEFAULT_SETTINGS.windowMs,
   maxAttempts: DEFAULT_SETTINGS.maxAttempts
 });
+
+let extensionEnabled = true;
+let applyQueue = Promise.resolve();
+
+// Turns the header rules and content scripts on or off. Calls are queued so that
+// quick toggles cannot interleave register/unregister. `refresh` re-registers the
+// scripts from scratch (used after install/update so definitions are never stale).
+function applyEnabledState(enabled, { refresh = false } = {}) {
+  applyQueue = applyQueue.then(async () => {
+    extensionEnabled = enabled !== false;
+    try {
+      await chrome.declarativeNetRequest.updateEnabledRulesets(
+        extensionEnabled ? { enableRulesetIds: RULESET_IDS } : { disableRulesetIds: RULESET_IDS }
+      );
+      let registeredIds = (await chrome.scripting.getRegisteredContentScripts()).map((s) => s.id);
+      if ((refresh || !extensionEnabled) && registeredIds.length) {
+        await chrome.scripting.unregisterContentScripts({ ids: registeredIds });
+        registeredIds = [];
+      }
+      if (extensionEnabled) {
+        const missing = CONTENT_SCRIPTS.filter((s) => !registeredIds.includes(s.id));
+        if (missing.length) await chrome.scripting.registerContentScripts(missing);
+      }
+    } catch (err) {
+      console.error('[AuthwallGuard] Failed to apply enabled state:', err);
+    }
+  });
+  return applyQueue;
+}
 
 // Load persisted settings and restore session loop-guard state
 async function initializeState() {
@@ -32,6 +81,7 @@ async function initializeState() {
 
     loopGuard.windowMs = effectiveSettings.windowMs;
     loopGuard.maxAttempts = effectiveSettings.maxAttempts;
+    await applyEnabledState(effectiveSettings.enabled);
 
     if (chrome.storage.session) {
       const { loopGuardState } = await chrome.storage.session.get('loopGuardState');
@@ -99,6 +149,10 @@ function setBadge(text, color) {
 chrome.webNavigation.onCommitted.addListener(
   (details) => {
     if (details.frameId !== 0) return;
+    // Checked synchronously: awaiting startup here delayed tabs.goBack enough to
+    // overshoot history (measured 10/21 vs 3/26 runs). After a cold start this is
+    // `true` until settings load, which matches the previous behaviour.
+    if (!extensionEnabled) return;
 
     const isBackForward = (details.transitionQualifiers && details.transitionQualifiers.includes('forward_back')) ||
                           details.transitionType === 'forward_back';
@@ -243,5 +297,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
+// Apply settings changed from the popup (on/off switch, loop thresholds)
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area !== 'local' || !changes.settings) return;
+  const effectiveSettings = { ...DEFAULT_SETTINGS, ...(changes.settings.newValue || {}) };
+  loopGuard.windowMs = effectiveSettings.windowMs;
+  loopGuard.maxAttempts = effectiveSettings.maxAttempts;
+  applyEnabledState(effectiveSettings.enabled);
+});
+
+// After install or update, re-register content scripts so their definitions match this version
+chrome.runtime.onInstalled.addListener(() => {
+  ready.then(() => applyEnabledState(extensionEnabled, { refresh: true }));
+});
+
 // Initialize on service worker startup
-initializeState();
+const ready = initializeState();

@@ -25,6 +25,8 @@ When you open a LinkedIn profile page (`linkedin.com/in/…` or `linkedin.cn/in/
 
 No other requests are modified. Your IP address and LinkedIn cookies are still sent as normal, so this does **not** hide who you are from LinkedIn.
 
+Turning OpenLink off with the switch in its popup stops the header rewrite and stops its scripts from running on LinkedIn pages until you turn it back on.
+
 ## What the extension sends
 
 The extension makes no network requests of its own: no `fetch`, `XMLHttpRequest`, WebSocket or beacon calls, and it does not load remote code.
@@ -36,6 +38,7 @@ If LinkedIn blocks a profile, the extension shows a banner with links to Archive
 | Permission | Why it is needed |
 |---|---|
 | `declarativeNetRequestWithHostAccess` | Rewrites the two headers above on LinkedIn profile page requests. |
+| `scripting` | Turns the LinkedIn page scripts on and off with the popup's on/off switch. It can only target the LinkedIn hosts listed below. |
 | `webNavigation` | Detects when the Back button lands on a LinkedIn authwall page, so it can skip past it. Only LinkedIn navigations are observed. |
 | `storage` | Saves the settings, counters and activity log described above. |
 | Host access to `*.linkedin.com` and `*.linkedin.cn` | Runs the content scripts on LinkedIn authwall and profile pages. The extension has no access to any other site. |

@@ -75,6 +75,10 @@
       if (res && res.settings) {
         settings = { ...settings, ...res.settings };
       }
+      // profile.css hides contextual sign-in popups unless <html> carries this class
+      if (settings.autoDismissModals === false) {
+        document.documentElement.classList.add('li-guard-keep-modals');
+      }
       if (settings.enabled) {
         initEnhancer();
       }
@@ -124,6 +128,7 @@
     modals.forEach((m) => m.remove());
 
     // Contextual sign-in modals
+    if (settings.autoDismissModals === false) return;
     const contextualModals = document.querySelectorAll(
       '.modal--contextual-sign-in, .contextual-sign-in-modal, .modal__overlay, [data-impression-id*="contextual-sign-in"]'
     );
